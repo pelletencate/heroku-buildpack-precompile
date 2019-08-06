@@ -14,7 +14,7 @@ export_env_dir() {
   fi
 }
 
-export_env_dir($env)
+export_env_dir "$env"
 
 echo "-----> Restoring Assets from Cache (if any)"
 cp -r $cache/assets $build/public
