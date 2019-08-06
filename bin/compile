@@ -1,9 +1,4 @@
 #!/bin/bash
-
-indent() {
-  sed 's/^/       /'
-}
-
 BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
@@ -17,17 +12,21 @@ ENV_DIR=$3
   done
 
   echo "-----> Restoring Assets from Cache (if any)"
-  cp -r $CACHE_DIR/assets $BUILD_DIR/public/
+  cp -r $CACHE_DIR/assets $BUILD_DIR/public
+  cp -r $CACHE_DIR/packs $BUILD_DIR/public
+  cp -r $CACHE_DIR/packs-test $BUILD_DIR/public
 
 
   echo "-----> Precompiling assets..."
 
   cd $BUILD_DIR
-  SKIP_CORPUS=1 bundle exec rake assets:precompile | indent
+  bundle exec rake assets:precompile | sed 's/^/       /'
 
   echo "-----> Assets precompiled!"
   echo "-----> Saving Assets to Cache"
   cp -r $BUILD_DIR/public/assets $CACHE_DIR
+  cp -r $BUILD_DIR/public/packs $CACHE_DIR
+  cp -r $BUILD_DIR/public/packs-test $CACHE_DIR
 
 echo "-----> Deleting app/assets to reduce slug size"
-rm -rf app/assets/
+rm -rf app/assets/ app/javascript
