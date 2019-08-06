@@ -1,32 +1,36 @@
 #!/bin/bash
-BUILD_DIR=$1
-CACHE_DIR=$2
-ENV_DIR=$3
+build=$1
+cache=$2
+env=$3
 
-  echo "-----> exporting env"
-  blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
-  for e in $(ls $ENV_DIR); do
-    echo "$e" | grep -qvE "$blacklist_regex" &&
-    export "$e=$(cat $ENV_DIR/$e)"
-    :
-  done
+export_env_dir() {
+  env_dir=$1
+  if [ -d "$env_dir" ]; then
+    for e in $(ls $env_dir); do
+      echo "$e" &&
+      export "$e=$(cat $env_dir/$e)"
+      :
+    done
+  fi
+}
 
-  echo "-----> Restoring Assets from Cache (if any)"
-  cp -r $CACHE_DIR/assets $BUILD_DIR/public
-  cp -r $CACHE_DIR/packs $BUILD_DIR/public
-  cp -r $CACHE_DIR/packs-test $BUILD_DIR/public
+export_env_dir($env)
 
+echo "-----> Restoring Assets from Cache (if any)"
+cp -r $cache/assets $build/public
+cp -r $cache/packs $build/public
+cp -r $cache/packs-test $build/public
 
-  echo "-----> Precompiling assets..."
+echo "-----> Precompiling assets..."
 
-  cd $BUILD_DIR
-  /app/bin/bundle exec rake assets:precompile | sed 's/^/       /'
+cd $build
+bundle exec rake assets:precompile | sed 's/^/       /'
 
-  echo "-----> Assets precompiled!"
-  echo "-----> Saving Assets to Cache"
-  cp -r $BUILD_DIR/public/assets $CACHE_DIR
-  cp -r $BUILD_DIR/public/packs $CACHE_DIR
-  cp -r $BUILD_DIR/public/packs-test $CACHE_DIR
+echo "-----> Assets precompiled!"
+echo "-----> Saving Assets to Cache"
+cp -r $build/public/assets $cache
+cp -r $build/public/packs $cache
+cp -r $build/public/packs-test $cache
 
 echo "-----> Deleting app/assets to reduce slug size"
 rm -rf app/assets/ app/javascript
