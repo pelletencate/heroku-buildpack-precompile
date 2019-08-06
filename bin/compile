@@ -20,7 +20,7 @@ ENV_DIR=$3
   echo "-----> Precompiling assets..."
 
   cd $BUILD_DIR
-  bundle exec rake assets:precompile | sed 's/^/       /'
+  /app/bin/bundle exec rake assets:precompile | sed 's/^/       /'
 
   echo "-----> Assets precompiled!"
   echo "-----> Saving Assets to Cache"
