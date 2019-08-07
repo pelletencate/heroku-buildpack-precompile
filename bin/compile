@@ -24,17 +24,18 @@ echo "-----> Restoring Assets from Cache (if any)"
 cp -r $cache/assets $build/public
 cp -r $cache/packs $build/public
 cp -r $cache/packs-test $build/public
+cp -r $cache/node_modules $build
 
 echo "-----> Precompiling assets..."
 
 cd $build
-bundle exec rake assets:precompile | sed 's/^/       /'
+bin/bundle exec rake assets:precompile | sed 's/^/       /'
 
 echo "-----> Assets precompiled!"
 echo "-----> Saving Assets to Cache"
-cp -r $build/public/assets $cache
-cp -r $build/public/packs $cache
-cp -r $build/public/packs-test $cache
+cp -r public/assets $cache
+cp -r public/packs $cache
+cp -r public/packs-test $cache
 
 echo "-----> Deleting app/assets to reduce slug size"
-rm -rf app/assets/ app/javascript
+rm -rf $build/app/assets/ $build/app/javascript
